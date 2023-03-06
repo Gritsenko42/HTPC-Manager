@@ -11,7 +11,8 @@ import cherrypy
 import htpc
 import logging
 import os
-from ctypes import windll
+if platform.system() == 'Windows':
+    from ctypes import windll
 import requests
 from htpc.auth2 import require, member_of
 
@@ -23,11 +24,9 @@ def admin():
     ### Returns:
     * **(bool):** True if running as an administrator, False otherwise.
     """
-    try:
-        is_admin = os.getuid() == 0
-    except AttributeError:
-        is_admin = windll.shell32.IsUserAnAdmin() != 0
-    return is_admin
+    if platform.system() == 'Windows':
+        return windll.shell32.IsUserAnAdmin() != 0
+    return os.getuid() == 0
 
 
 importPsutil = False
